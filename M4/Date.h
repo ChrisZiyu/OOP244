@@ -61,6 +61,8 @@ namespace sdds {
 		operator bool() const;
 		std::ostream& write(std::ostream& COUT) const;
 		std::istream& read(std::istream& CIN);
+
+		//getters
 	};
 	std::ostream& operator<<(std::ostream& os, const Date& date);
 	std::istream& operator>>(std::istream& is, Date& date);
