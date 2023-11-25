@@ -30,22 +30,9 @@ namespace sdds {
 
 	Status::operator bool() const
 	{
-		//if (description==nullptr)
-		//{
-		//	return(description == nullptr);
-
-		//}
-		//else if (description!=nullptr)
-		//{
-		//	return description;
-		//}
-		return description == nullptr;
+		return !description;
 	}
 
-	//Status& Status::operator=(const Status& other)
-	//{
-	//	// TODO: insert return statement here
-	//}
 
 	Status::Status(char* desc, int status)
 	{
@@ -65,7 +52,7 @@ namespace sdds {
 	{
 		delete[] description;
 	}
-	//copy constructor
+	
 	Status::Status(const Status& other)
 	{
 		if (other.description!=nullptr)
@@ -99,44 +86,7 @@ namespace sdds {
 		return statusCode;
 	}
 
-
-	Status::Status()
-	{
-		description = nullptr;
-		statusCode = 0;
-	}
-
-	//int Status::getStatus() const
-	//{
-	//	return statusCode;
-	//}
-
-	//bool Status::hasCode() const
-	//{
-	//	return (statusCode != 0);
-	//}
-	//bool Status::hasDesc() const
-	//{
-	//	return (description != nullptr);
-	//}
-	//Assignment Op
-	//Status& Status::operator=(const Status& other)
-	//{
-	//	if (this !=&other) {
-	//		delete[] description;
-	//		if (other.description!=nullptr)
-	//		{
-	//			description = new char[strlen(other.description) + 1];
-	//			strcpy(description, other.description);
-	//		}
-	//		else {
-	//			description = nullptr;
-	//		}
-	//	statusCode = other.statusCode;
-	//	}
-	//	return *this;
-	//}
-
+	
 	Status& Status::operator=(const char* newDesc)
 	{
 		delete[] description;

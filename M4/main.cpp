@@ -79,57 +79,19 @@ void entryAndSave() {
     file.close();
     delete p;
 }
-//void fileAndRuleOf3() {
-//    ifstream file("data.dat");
-//    Perishable p;
-//    Perishable last;
-//    cout << "--------------------------------------------------------------------------------" << endl;
-//    while (p.load(file)) {
-//        //displayLinear(last);//call copy constructor that set to empty state
-//        display(p);
-//        last = p;
-//    }
-//    //displayLinear(last);//call for the copy assignment that passes from RO to LO
-//
-//    if (file.eof()) {
-//        cout << "End of file reached." << endl;
-//    }
-//    else if (file.fail()) {
-//        cout << "Failed to read from the file." << endl;
-//    }
-//    else {
-//        cout << "Unknown issue." << endl;
-//    }
-//}
 void fileAndRuleOf3() {
-    const char* fileName = "data.dat";
-    ifstream file(fileName);
-
-    if (!file.is_open()) {
-        cout << "Failed to open file: " << fileName << endl;
-        return;
-    }
-
+    ifstream file("data.dat");
     Perishable p;
     Perishable last;
-    cout << "Processing file: " << fileName << endl;
     cout << "--------------------------------------------------------------------------------" << endl;
     while (p.load(file)) {
-       
+        displayLinear(last);//call copy constructor that set to empty state
         display(p);
         last = p;
     }
-
-    if (file.eof()) {
-        cout << "End of file reached." << endl;
-    }
-    else if (file.fail()) {
-        cout << "Failed to read from the file." << endl;
-    }
-    else {
-        cout << "Unknown issue." << endl;
-    }
+    displayLinear(last);//call for the copy assignment that passes from RO to LO
 }
+
 
 
 void display(Perishable p) {

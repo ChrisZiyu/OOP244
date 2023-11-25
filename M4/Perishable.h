@@ -6,8 +6,8 @@
 #include<fstream>
 namespace sdds {
 	class Perishable :public Item {
-		char* m_instructions;
-		Date m_exp_date;
+		char* m_instructions{};
+		Date m_exp_date{ Date() };
 		
 	public:
 		Perishable();
@@ -25,6 +25,10 @@ namespace sdds {
 		ifstream& load(std::ifstream& ifstr)override;
 		ostream& display(std::ostream& ostr)const override;
 		istream& read(std::istream& istr) override;
+
+		operator bool()const {
+			return m_exp_date.getYear();
+		}
 	};
 }
 #endif // !PERISHABLE_H

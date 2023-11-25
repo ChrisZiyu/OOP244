@@ -30,21 +30,21 @@ namespace sdds {
 		int LAST_VALID_DAY = 31;
 
 		//create instance of a class for the State of the date, It's known as composition or aggregation and is a way to represent a "has-a" relationship between classes.
-		sdds::Status m_state;
+		sdds::Status m_state{};
 		sdds::Utils ut;
 
-		int year;//current year
-		int month;//int 1 to 12
-		int day;//1-31
+		int year{};//current year
+		int month{};//int 1 to 12
+		int day{};//1-31
 		
-		bool m_formatted;
+		bool m_formatted{ true };
 
 
 		bool validDate();
 		bool validDateWithParameters(int year, int month, int day);
 		int uniqueValue() const;
 	public:
-		Date();
+		Date() {}
 		Date(int year, int month, int day);
 		bool operator =(const Date& other);
 		bool operator ==(const Date& other) const;

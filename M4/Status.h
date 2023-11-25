@@ -14,10 +14,10 @@ I have done all the coding by myself and only copied the code that my professor 
 #include <iostream>
 namespace sdds {
 	class Status {
-		char* description;
-		int statusCode=0;
+		char* description{};
+		int statusCode{};
 	public:
-		Status();
+		Status() {}
 		Status(char* desc,int status);
 		~Status();
 		Status(const Status& other);

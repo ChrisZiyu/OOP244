@@ -261,9 +261,9 @@ namespace sdds {
 		
 		double purchaseFund = 0.0;
 		//	If the state is good the following will be done.
-		if (this)
+		if (*this)
 		{
-			if (linear() == true && m_sku!=0) {
+			if (linear() && m_sku) {
 				
 				ostr << setw(5) << left << m_sku <<" " << setfill(' ') << "| ";
 				for (size_t i = 0; i < 35 && m_item_desc[i]!='\0'; i++)
@@ -287,8 +287,8 @@ namespace sdds {
 				ostr<< setw(6) << fixed << setprecision(2) << m_price << " |";
 			}
 			else {
-				
-				ostr << "AMA Item:"<<endl;
+																															
+ 				ostr << "AMA Item:"<<endl;
 				ostr << m_sku << ": " << m_item_desc<<endl;
 				ostr << "Quantity Needed: " << m_neededQty<<endl;
 				ostr << "Quantity Available: " << m_qtyOnHand<<endl;

@@ -8,37 +8,28 @@
 #include<fstream>
 using namespace std;
 namespace sdds {
-	Perishable::Perishable()
-	{
-		m_instructions = nullptr;
-		m_exp_date = Date();
-	}
+	Perishable::Perishable() {}
 	Perishable::Perishable(const Perishable& other):Item(other)
 	{
-		if (this != &other &&m_sku!=0)
-		{
-			m_instructions = new char[strlen(other.m_instructions) + 1];
-			strcpy(m_instructions, other.m_instructions);
-			this->m_exp_date = other.m_exp_date;
-		}
+		*this = other;
 	}
 	Perishable& Perishable::operator=(const Perishable& perishable)
 	{
-		(Item)*this=perishable;
-		//Item per;
-		//per = perishable;
+		Item::operator=(perishable);
 
-		if (this!=&perishable)
-		{
-			/*delete[] m_instructions;*/
-			m_instructions = new char[strlen(perishable.m_instructions) + 1];
-			strcpy(m_instructions, perishable.m_instructions);
-			this->m_instructions = perishable.m_instructions;
-		}
-		else {
+		if (this!=&perishable){
+			delete[] m_instructions;
 			m_instructions = nullptr;
-			m_exp_date=Date();
+
+			if (perishable.m_instructions
+				&& perishable.m_instructions[0] != '\0') {
+				m_instructions = new char[strlen(perishable.m_instructions) + 1];
+				strcpy(m_instructions, perishable.m_instructions);
+			}
+
+			m_exp_date = perishable.m_exp_date;
 		}
+
 		return *this;
 	}
 	const Date& Perishable::expiry() const
@@ -49,23 +40,7 @@ namespace sdds {
 	{
 		m_exp_date.formatted(false);
 	}
-	//char* Perishable::readInstructions(ifstream& ifstr)
-	//{
-	//	ifstr.ignore();
-	//	
-	//	const int size = 1000;
-	//	char tempInstructions[size];
-	//	tempInstructions[0] = '\0';
-	//	
-	//	ifstr.getline(tempInstructions, size, '\t');
-	//	if (tempInstructions[0] != '\0'&&tempInstructions!=nullptr) {
-	//		ut.alocpy(m_instructions, tempInstructions);
-	//	}
-	//	else { m_instructions = nullptr; }
 
-	//	return m_instructions;
-
-	//}
 	char* Perishable::readInstructions(istream& istr)
 	{
 		delete[] m_instructions;
@@ -131,23 +106,28 @@ namespace sdds {
 	}
 	ofstream& Perishable::save(ofstream& ofstr) const
 	{
-		// If the Perishable item is in a good state
-		if (*this)
-		{
+		if (ofstr) {
 			Item::save(ofstr);
 			
-			if (m_instructions && m_instructions[0]!='\t')
-			{
-				ofstr << '\t';
-				ofstr << m_instructions<<'\t';
-			}
-			else if (m_instructions && m_instructions[0]!='\0')
-			{
-				/*ofstr << '\t';*/
-				ofstr << m_instructions << '\t';
-			}
-			//setUnformatted(); change it in a place where theres no const defined
-			ofstr << m_exp_date;//check if need of endl
+			//if (m_instructions && m_instructions[0]!='\t')
+			//{
+			//	ofstr << '\t' << m_instructions;
+			//}
+			//else if (m_instructions && m_instructions[0]!='\0')
+			//{
+			//	ofstr << m_instructions;
+			//}
+
+
+
+
+			ofstr << '\t' << (m_instructions ? m_instructions : "") << '\t';
+
+			//copy of expiry date
+			Date temp(m_exp_date.getYear(), m_exp_date.getMonth(), m_exp_date.getDay());
+			temp.formatted(false);
+
+			ofstr << temp;//check if need of endl
 		}
 		return ofstr;
 
@@ -161,7 +141,6 @@ namespace sdds {
 	{
 
 		Item::load(ifstr);
-		//readInstructions(ifstr);
 		ifstr.ignore();
 
 		const int size = 1000;
@@ -169,13 +148,16 @@ namespace sdds {
 		tempInstructions[0] = '\0';
 
 		ifstr.getline(tempInstructions, size, '\t');
-		if (tempInstructions[0] != '\t' && tempInstructions != nullptr) {
+		if (tempInstructions[0] != '\0') {
 			ut.alocpy(m_instructions, tempInstructions);
 		}
-		else { m_instructions = nullptr; }
+		else 
+		{
+			delete[] m_instructions;
+			m_instructions = nullptr;
+		}
 
 
-		ifstr.ignore();
 		ifstr >> m_exp_date;
 		ifstr.ignore();
 		if (ifstr.fail())
@@ -183,38 +165,20 @@ namespace sdds {
 			status.clear();
 			status.setStatus("Input file stream read (perishable) failed!");
 		}
-		/*ifstr.fail();*/
 		return ifstr;
 	}
 	ostream& Perishable::display(ostream& ostr) const
 	{
-	//	if the Perishable Item is in a bad state, the state is printed
-	//		otherwise if linear
-	//		the display of the base class is called
-	//		if handling instructions are not null and not empty a single asterisk('*') is printed otherwise a single space(' ') is printed.
-	//			the expiry date is printed
-	//			if not linear
-	//				prints "Perishable "
-	//				displays the base class
-	//				prints "Expiry date: "
-	//				printed the expiry date(formatted)
-	//				if the handling instructions attribute is not null and is not empty "Handling Instructions: " and the content of the instructions are printed
-	//					A new line is printed.
-		if (ostr)
+		if (m_exp_date)
 		{
 			double purchaseFund = 0.0;
 			if (Item::linear())
 			{
 				Item::display(ostr);
-				if (m_instructions != nullptr && m_instructions[0] != '\0')
-				{
-					ostr << "*";
-					displayExpiryDate(cout);
-				}
-				else if(m_instructions[0]=='\t') {
-					ostr << " ";
-					displayExpiryDate(cout);
-				}
+
+				ostr << (m_instructions && m_instructions[0] != '\0' ? '*' : ' ');
+
+				displayExpiryDate(ostr);
 			}
 			else {
 				char* itemDesc = getItemDesc();
@@ -247,36 +211,28 @@ namespace sdds {
 	}
 	istream& Perishable::read(std::istream& istr)
 	{
-		/*The read of the base class is called
-			the handling instructions memory is deleted and the attribute is set to null
-			prompts : "Expiry date (YYMMDD): "
-			the expiry date is read
-			newline is ignored
-			prompts : "Handling Instructions, ENTER to skip: "
-			peeks and if the very first character is not '\n' it will read the instructions dynamically into the instructions attribute.otherwise, nothing is read and the attribute remains null.
-			if the istream object is in a fail state, it will set the state of the Perishable Item to "Perishable console date entry failed!".*/
 		if (istr)
 		{
-			//readSku(istr);
 			Item::read(istr);
 			readExpiryDate(istr);
 			istr.clear();
 			istr.ignore();
 			cout << "Handling Instructions, ENTER to skip: ";
-			if (istr.peek()!='\n')
-			{
-				readInstructions(istr);//might need to add wordspace for the output in file
-				
-			}
-			else if (istr.peek()=='\n')
-			{
-				m_instructions = new char[2];
-				strcpy(m_instructions, " ");
-			}
-			else { m_instructions = nullptr; }
 
-			
+			delete[] m_instructions;
+			m_instructions = nullptr;
+			 
+			const int bufferSZ = 99;
+			char buffer[bufferSZ]{};
+			size_t i{};
 
+			for (; i < bufferSZ && istr.peek() != '\n'; i++)
+				buffer[i] = istr.get();
+
+			if (i){
+				m_instructions = new char[i + 1];
+				strcpy(m_instructions, buffer);
+			}
 		}
 		else {
 			status.clear();

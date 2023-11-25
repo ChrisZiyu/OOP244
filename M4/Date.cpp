@@ -14,53 +14,31 @@ I have done all the coding by myself and only copied the code that my professor 
 
 namespace sdds {
 	bool Date:: validDate() {
-		
-		if (year<CURRENT_YEAR|| year> MAX_YEAR)
+		int maxDay = ut.daysOfMon(month, year);
+		bool valid{ true };
+
+		if (year<CURRENT_YEAR || year> MAX_YEAR)
 		{
 			m_state= "Invalid year in date";
 			m_state.setStatus(1);
-			return false;
+			valid = false;
 		}
 		if (month <= INVALID_DATE || month >= MONTH_THIRTEEN)
 		{
 			m_state = "Invalid month in date";
 			m_state.setStatus(2);
-			return false;
+			valid = false;
 		}
-		//if (day<FIRST_VALID_DAY || day >LAST_VALID_DAY)
-		//{
-
-		//	m_state = "Invalid day in date";
-		//	m_state.setStatus(3);
-		//	return false;
-
-		//}
-		//else if (day >= FIRST_VALID_DAY || day <= LAST_VALID_DAY)
-		//{
-		//	if (day == LAST_VALID_DAY && month == 2 || day == LAST_VALID_DAY && month == 4 || day == LAST_VALID_DAY && month == 6 || day == LAST_VALID_DAY && month == 9 || day == LAST_VALID_DAY && month == 11)
-		//	{
-		//		m_state = "Invalid day in date";
-		//		m_state.setStatus(3);
-		//		return false;
-		//	}
-		//	else if (day==29 && month==2 && year==25)
-		//	{
-		//		m_state = "Invalid day in date";
-		//		m_state.setStatus(3);
-		//		return false;
-		//	}
-		//}
-		int maxDay = ut.daysOfMon(month, year);
 		if (day < FIRST_VALID_DAY || day > maxDay) {
 			m_state = "Invalid day in date";
 			m_state.setStatus(3);
-			return false;
+			valid = false;
 		}
-		return true;
+
+		return valid;
 	}
 	bool Date::validDateWithParameters(int year, int month, int day)
 	{
-
 		if (year<CURRENT_YEAR || year> MAX_YEAR)
 		{
 			m_state = "Invalid year in date";
@@ -85,27 +63,13 @@ namespace sdds {
 	{
 		return year * 372 + month * 31 + day;
 	}
-	Date::Date()
-	{
-		int m_year=2023;
-		int m_month=12;
-		int m_day=9;
-		//ut.getSystemDate(&m_year, &m_month, &m_day);//change for later might come on exam!!!
-		year = m_year;
-		month = m_month;
-		day = m_day;
-		m_formatted = true;
-	}
 	Date::Date(int f_year, int f_month, int f_day)
 	{
-		validDateWithParameters(f_year, f_month, f_day);
-		if (f_year!=0 && f_month !=0 && f_day !=0)
+		if (validDateWithParameters(f_year, f_month, f_day))
 		{
-			this->year = f_year;
-			this->month = f_month;
-			this->day = f_day;
-			m_formatted = true;
-			
+			year = f_year;
+			month = f_month;
+			day = f_day;
 		}
 
 	}
@@ -113,10 +77,10 @@ namespace sdds {
 	{
 		if (this != &other) {
 			// Copy non-const member variables
-			this->year = other.year;
-			this->month = other.month;
-			this->day = other.day;
-			this->m_formatted = other.m_formatted;
+			year = other.year;
+			month = other.month;
+			day = other.day;
+			m_formatted = other.m_formatted;
 		}
 		return *this;
 	}
@@ -162,33 +126,29 @@ namespace sdds {
 		if (m_formatted)
 		{			  //10000000
 			// Print as YYYY/MM/DD with zero-padded month and day
-			COUT << year << '/' << std::setw(2) << std::setfill('0') << month << '/' << std::setw(2) << std::setfill('0') << day;
+			COUT << year << '/' << std::setw(2) << std::setfill('0') << month << '/';
 		}
 		else {		  //100000
 			// Print as YYMMDD with zero-padded month and day
-			COUT << std::setw(2) << std::setfill('0') << (year % 100) << std::setw(2) << std::setfill('0') << month << std::setw(2) << std::setfill('0') << day;
+			COUT << std::setw(2) << std::setfill('0') << (year % 100) << std::setw(2) << std::setfill('0') << month;
 		}
+
+		COUT << std::setw(2) << std::setfill('0') << day;
+
 		return COUT;
 	}
 
 	std::istream& Date::read(std::istream& CIN)
 	{
 		int receivedDate;
-		/*CIN >> receivedDate;*/
-		if (!(CIN >> receivedDate)) {
-			// Input is not a valid integer
-			
-			CIN.setstate(std::ios::failbit);
-			m_state = "Invalid date value";
-			return CIN;
-		}
-		//format MMDD
+		CIN >> receivedDate;
+
+		//if 4 digits read MMDD format 
 		if (receivedDate>=1000 && receivedDate<=9999)
 		{
-			year = 2023;
-			month = receivedDate / 100;
+			year = (receivedDate / 10000) + 2000;
+			month = (receivedDate / 100) % 1000;
 			day = receivedDate % 100;
-			/*year += 2000;*/
 		}
 		else if (receivedDate >=100000 && receivedDate <= 999999)
 		{												  
@@ -202,12 +162,12 @@ namespace sdds {
 			year = 2023;
 			month = 0;
 			day = receivedDate % 100;
-			/*year += 2000;*/
 		}
+
+
 		if (!validDate())
-		{
 			CIN.setstate(std::ios::badbit);
-		}
+
 		return CIN;
 	}
 
@@ -218,8 +178,7 @@ namespace sdds {
 	}
 	std::istream& operator>>(std::istream& is, Date& date)
 	{
-		 date.read(is);
-		return is;
+		return date.read(is);
 	}
 }
 
