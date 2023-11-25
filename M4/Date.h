@@ -63,6 +63,9 @@ namespace sdds {
 		std::istream& read(std::istream& CIN);
 
 		//getters
+		int getYear() const { return year; }
+		int getMonth() const { return month; }
+		int getDay() const { return day; }
 	};
 	std::ostream& operator<<(std::ostream& os, const Date& date);
 	std::istream& operator>>(std::istream& is, Date& date);
