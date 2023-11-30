@@ -1,0 +1,12 @@
+# Ignore Visual Studio solution files
+*.sln
+
+# Ignore Visual Studio project files
+*.vcxproj
+*.vcxproj.filters
+
+# Ignore Visual Studio directory
+.vs/
+
+# Ignore x64 directory
+x64/
